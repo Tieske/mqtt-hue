@@ -48,7 +48,7 @@ lights.onMessage = function(topic, message) {
 
        switch(property) {
          case "on":
-           light.on = message.toString() == 'true';
+           light.on = message.toString() === 'true';
             break;
           case "brightness":
             light.brightness = message.toString();
@@ -56,13 +56,14 @@ lights.onMessage = function(topic, message) {
           case "state":
             try {
               let json = JSON.parse(message.toString());
-              if(json["brightness"]!=undefined) light.brightness = json["brightness"];
-              if(json["transitionTime"]!=undefined) light.transitionTime = json["transitionTime"];
-              if(json["hue"]!=undefined) light.hue = json["hue"];
-              if(json["saturation"]!=undefined) light.saturation = json["saturation"];
-              if(json["on"]!=undefined) light.on = json["on"];
+              if (json["brightness"] !== undefined) light.brightness = json["brightness"];
+              if (json["transitionTime"] !== undefined) light.transitionTime = json["transitionTime"];
+              if (json["hue"] !== undefined) light.hue = json["hue"];
+              if (json["saturation"] !== undefined) light.saturation = json["saturation"];
+              if (json["on"] !== undefined) light.on = json["on"];
             } catch (ex) {
-              console.log(ex);
+              console.error(ex);
+              process.exit(1);
             }
           break;
        }
@@ -85,19 +86,20 @@ lights.callback = function() {
       setTimeout(this.callback.bind(this), this.timeout);
     })
     .catch(error => {
-      console.log(`An error occurred: ${error.message}`);
+      console.error(`An error occurred: ${error.message}`);
+      process.exit(1);
     });
 };
 
 lights.publishLight = function(previous, current) {
-  if(!previous || previous.name != current.name)
-    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/name`, `${current.name}`, { retain: true });
-  if(!previous || previous.on != current.on)
-    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/on`, `${current.on}`, { retain: true });
-  if(!previous || previous.hue != current.hue)
-    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/hue`, `${current.hue}`, { retain: true });
-  if(!previous || previous.saturation != current.saturation)
-    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/saturation`, `${current.saturation}`, { retain: true });
-  if(!previous || previous.brightness != current.brightness)
-    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/brightness`, `${current.brightness}`, { retain: true });
+  if (!previous || previous.name !== current.name)
+    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/name`, `${current.name}`, {retain: true});
+  if (!previous || previous.on !== current.on)
+    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/on`, `${current.on}`, {retain: true});
+  if (!previous || previous.hue !== current.hue)
+    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/hue`, `${current.hue}`, {retain: true});
+  if (!previous || previous.saturation !== current.saturation)
+    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/saturation`, `${current.saturation}`, {retain: true});
+  if (!previous || previous.brightness !== current.brightness)
+    this.mqtt.publish(`lights/hue/${current.uniqueId}/get/brightness`, `${current.brightness}`, {retain: true});
 };

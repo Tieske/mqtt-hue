@@ -41,8 +41,9 @@ sensors.callback = function() {
       setTimeout(this.callback.bind(this), this.timeout);
     })
    .catch(error => {
-      console.log(`An error occurred: ${error.message}`);
-    });
+     console.error(`An error occurred: ${error.message}`);
+     process.exit(1);
+   });
 };
 
 sensors.humidity = function(previous, current) {
