@@ -34,7 +34,14 @@ sensors.callback = function() {
           this.zll(previous, sensor);
         } else if(sensor.type == "ZHATemperature" || sensor.type == "ZLLTemperature") {
           this.temp(previous, sensor);
-        } else if(sensor.type == "ZHAHumidity") {
+        
+        // NPetersenDK edit - calling presence, not part of orginal.
+        }
+          else if(sensor.type == "ZLLPresence") {
+          this.presence(previous, sensor);
+        }
+
+        else if(sensor.type == "ZHAHumidity") {
           this.humidity(previous, sensor);
         }
       }
@@ -91,6 +98,26 @@ sensors.temp = function(previous, current) {
   if(!previous) {
     var temp =  current.state.attributes.attributes["temperature"] / 100;
       this.mqtt.publish(`sensors/hue/${current.uniqueId}/get/temperature`, `${temp}`, { retain: true });
+  }
+}
+
+// NPetersenDK Presence detection - I rather like names, than ID's in this part. Since its eaiser in Python to work with names than IDs.
+sensors.presence = function(previous, current) {
+  var currentAttr = current.state.attributes.attributes;
+  var prevAttr;
+  if(previous) {
+    var prevAttr = previous.state.attributes.attributes;
+  }
+
+  if(!previous || previous.name != current.name)
+    this.mqtt.publish(`sensors/hue/${current.uniqueId}/get/name`, `${current.name}`, { retain: true });
+
+  if(previous && (prevAttr["lastupdated"] != currentAttr["lastupdated"])) {
+    var lastmotion =  current.state.attributes.attributes["lastupdated"];
+
+    // NPetersenDK - Publishing to both uniqueID and name :)
+    this.mqtt.publish(`sensors/hue/${current.uniqueId}/get/lastmotion`, `${lastmotion}`, { retain: true });
+    this.mqtt.publish(`sensors/hue/${current.name}/get/lastmotion`, `${lastmotion}`, { retain: true });
   }
 }
 
