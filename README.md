@@ -2,6 +2,50 @@
 
 This is a MQTT to Philips Hue Bridge. It is written in Node.js and provides MQTT control over hue sensors and lights.
 
+## Configuration
+
+Can be done either by providing `config.json` (at the root of the repo), or by
+specifying environment variables. The environment variables take precedence over
+the config file.
+
+Example `./config.json` and equivalent environment variables:
+```
+{
+  "hue": {
+    "host": "192.168.0.6",                # or env: MH_HUE_HOST
+    "port": 80,                           # or env: MH_HUE_PORT
+    "username": "coolusername",           # or env: MH_HUE_USERNAME
+    "timeout": 15000                      # or env: MH_HUE_TIMEOUT
+  },
+  "mqtt": {
+    "url": "mqtt://test.mosquitto.org",   # or env: MH_MQTT_URL
+    "username": "it_is_me",               # or env: MH_MQTT_USERNAME
+    "password": "sooper secret"           # or env: MH_MQTT_PASSWORD
+  }
+}
+```
+
+For additional `mqtt` options (only supported in `./config.json`) see
+https://www.npmjs.com/package/mqtt#mqttconnecturl-options.
+
+## Starting
+
+locally:
+```shell
+npm install
+node server.js
+```
+
+Docker:
+```
+docker build -t huemqtt .
+docker run --name my_huemqtt \
+   -e MH_HUE_HOST=192.168.0.6 \
+   -e MH_HUE_USERNAME=coolusername \
+   -e MH_MQTT_HOST=mqtt://test.mosquitto.org \
+   huemqtt
+```
+
 ## Endpoints
 
 ### Lights
